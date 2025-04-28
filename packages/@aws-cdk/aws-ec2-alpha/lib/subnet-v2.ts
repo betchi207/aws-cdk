@@ -313,7 +313,8 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
     props.subnetName ? Tags.of(this).add(NAME_TAG, props.subnetName) : Tags.of(this).add(NAME_TAG, subnet.node.path);
 
     const includeResourceTypes = [CfnSubnet.CFN_RESOURCE_TYPE_NAME];
-    Tags.of(this).add(SUBNETNAME_TAG, defaultSubnetName(props.subnetType), { includeResourceTypes });
+    const overridenSubnetNameTag = props.vpc.node.path + props.subnetName + '/Subnet';
+    Tags.of(this).add(SUBNETNAME_TAG, overridenSubnetNameTag, { includeResourceTypes });
     Tags.of(subnet).add(SUBNETTYPE_TAG, defaultSubnetName(props.subnetType), { includeResourceTypes });
 
     if (props.vpc.vpcName) {
