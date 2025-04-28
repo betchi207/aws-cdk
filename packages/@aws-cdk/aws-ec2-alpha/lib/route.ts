@@ -298,6 +298,10 @@ export class InternetGateway extends Resource implements IRouteTarget {
       Tags.of(this).add(NAME_TAG, props.internetGatewayName);
     }
 
+    if (props.vpc.vpcName) {
+      Tags.of(this).add('Name', props.vpc.vpcName);
+    }
+
     new CfnVPCGatewayAttachment(this, 'GWAttachment', {
       vpcId: this.vpcId,
       internetGatewayId: this.routerTargetId,
@@ -469,10 +473,13 @@ export class NatGateway extends Resource implements IRouteTarget {
       ...props,
     });
     FeatureFlags.of(this).isEnabled(cx_api.USE_RESOURCEID_FOR_VPCV2_MIGRATION) ?
-      this.natGatewayId = this.resource.ref :this.natGatewayId = this.resource.attrNatGatewayId;
+      this.natGatewayId = this.resource.ref : this.natGatewayId = this.resource.attrNatGatewayId;
 
     Tags.of(this).add('Name', props.subnet.node.path);
-    this.routerTargetId = this.resource.attrNatGatewayId;
+
+    FeatureFlags.of(this).isEnabled(cx_api.USE_RESOURCEID_FOR_VPCV2_MIGRATION) ?
+      this.routerTargetId = this.resource.ref : this.routerTargetId = this.resource.attrNatGatewayId;
+
     this.node.defaultChild = this.resource;
     this.node.addDependency(props.subnet.internetConnectivityEstablished);
   }
